@@ -2,6 +2,7 @@ package com.example.mapsapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mapsapp.view.MapFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

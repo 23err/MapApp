@@ -1,35 +1,28 @@
-package com.example.mapsapp
+package com.example.mapsapp.view
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.example.mapsapp.R
 import com.example.mapsapp.databinding.FragmentMapBinding
+import com.example.mapsapp.domain.Marker
+import com.example.mapsapp.viewmodel.MapViewModel
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : BaseFragment<FragmentMapBinding>(FragmentMapBinding::inflate), OnMapReadyCallback {
 
-    private var _binding: FragmentMapBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var map: GoogleMap
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentMapBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+     private lateinit var map: GoogleMap
+    private val viewModel: MapViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,6 +39,29 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         enableMyLocation()
+        mapSetClickListeners()
+        viewModel.markers.observe(viewLifecycleOwner) { setMarkers(it) }
+
+    }
+
+    private fun setMarkers(list: List<Marker>) {
+        list.forEach {
+            setMarker(it)
+        }
+    }
+
+    private fun setMarker(marker: Marker) {
+        map.addMarker(
+            MarkerOptions()
+                .position(LatLng(marker.lat, marker.lng))
+                .title(marker.title)
+        )
+    }
+
+    private fun mapSetClickListeners() {
+        map.setOnMapLongClickListener {
+            viewModel.newMarker(it.latitude, it.longitude)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -101,11 +117,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             isMyLocationButtonEnabled = true
             isZoomControlsEnabled = true
         }
-    }
-
-    override fun onDestroy() {
-        _binding = null
-        super.onDestroy()
     }
 
     companion object {
