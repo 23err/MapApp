@@ -12,21 +12,31 @@ import androidx.fragment.app.activityViewModels
 import com.example.mapsapp.R
 import com.example.mapsapp.databinding.FragmentMapBinding
 import com.example.mapsapp.domain.Marker
-import com.example.mapsapp.viewmodel.MapViewModel
+import com.example.mapsapp.tool.Navigation
+import com.example.mapsapp.viewmodel.SingleViewModel
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
-class MapFragment : BaseFragment<FragmentMapBinding>(FragmentMapBinding::inflate), OnMapReadyCallback {
+class MapFragment : BaseFragment<FragmentMapBinding>(FragmentMapBinding::inflate),
+    OnMapReadyCallback {
 
-     private lateinit var map: GoogleMap
-    private val viewModel: MapViewModel by activityViewModels()
+    private lateinit var map: GoogleMap
+    private val viewModel: SingleViewModel by activityViewModels()
+    private val navigation by lazy { Navigation(parentFragmentManager) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapInit()
+        setClickListeners()
+    }
+
+    private fun setClickListeners() {
+        binding.btnToList.setOnClickListener {
+            navigation.toMarkers()
+        }
     }
 
     private fun mapInit() {
@@ -41,10 +51,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(FragmentMapBinding::inflate
         enableMyLocation()
         mapSetClickListeners()
         viewModel.markers.observe(viewLifecycleOwner) { setMarkers(it) }
-
     }
 
     private fun setMarkers(list: List<Marker>) {
+        map.clear()
         list.forEach {
             setMarker(it)
         }
@@ -55,6 +65,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(FragmentMapBinding::inflate
             MarkerOptions()
                 .position(LatLng(marker.lat, marker.lng))
                 .title(marker.title)
+                .snippet(marker.annotation)
         )
     }
 

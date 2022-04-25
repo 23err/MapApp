@@ -6,4 +6,7 @@
     <dimen name="markers_item_margin">5dp</dimen>
     <dimen name="markers_item_title_text_size">34sp</dimen>
     <dimen name="markers_item_padding">10dp</dimen>
+    <dimen name="marker_tv_latlong">16sp</dimen>
+    <dimen name="marker_latlong_margin_top">20dp</dimen>
+    <dimen name="map_float_btn_margin">10dp</dimen>
 </resources>

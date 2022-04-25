@@ -1,10 +1,11 @@
 package com.example.mapsapp.model
 
 import com.example.mapsapp.domain.Marker
+import kotlinx.coroutines.flow.Flow
 
 interface IRepository {
-    fun saveMarker(marker: Marker)
-    fun getMarkers(): List<Marker>
-    fun updateMarker(marker: Marker)
-    fun deleteMarker(marker: Marker)
+    suspend fun saveMarker(marker: Marker)
+    fun getMarkers(): Flow<List<Marker>>
+    suspend fun updateMarker(marker: Marker)
+    suspend fun getMarker(id: Long): Marker?
 }
